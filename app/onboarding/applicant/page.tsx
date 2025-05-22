@@ -125,8 +125,8 @@ export default function ApplicantOnboarding() {
     <div className="min-h-screen auth-gradient">
       <div className="max-w-4xl mx-auto p-4 py-8">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mb-4">
-            <span className="text-white text-2xl font-bold">P</span>
+        <div className="flex justify-center">
+          <img src="/prism-logo1.png" alt="Prism Logo" className="w-[5rem] h-[5rem] mb-4" />
           </div>
           <h1 className="text-3xl font-bold text-white">Set Up Your Profile</h1>
           <p className="text-white/70 mt-2">Let's create your professional profile to help you find the perfect job</p>

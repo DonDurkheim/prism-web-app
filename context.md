@@ -12,7 +12,7 @@
 - [Security & Compliance](#security--compliance)
 - [Support & Resources](#support--resources)
 - [Future Roadmap](#future-roadmap)
-- [Database Schema](#database-schema)
+- [Database Schema](#database-schema) 
 - [Project Structure](#project-structure)
 
 ## 🌟 Overview

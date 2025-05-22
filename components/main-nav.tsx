@@ -44,9 +44,9 @@ export function MainNav() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
         <div className="mr-4 flex">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
-            <span className="hidden font-bold sm:inline-block">Prism</span>
-          </Link>
+<Link href="/" className="mr-6 flex items-center space-x-2">
+  <img src="/prism-full-length1.png" alt="Prism Logo" className="h-8 object-contain" />
+</Link>
         </div>
         <NavigationMenu>
           <NavigationMenuList>

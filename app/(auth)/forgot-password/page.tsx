@@ -1,13 +1,12 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { supabase } from "@/lib/supabase/client"
 import { useToast } from "@/components/ui/use-toast"
 
@@ -21,9 +20,11 @@ export default function ForgotPasswordPage() {
     e.preventDefault()
     setIsLoading(true)
 
+    const redirectUrl = typeof window !== "undefined" ? `${window.location.origin}/reset-password` : "/reset-password"
+
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: redirectUrl,
       })
 
       if (error) throw error
@@ -33,7 +34,7 @@ export default function ForgotPasswordPage() {
         title: "Reset link sent",
         description: "Check your email for a link to reset your password.",
       })
-    } catch (error: any) {
+    } catch (error: Error | any) {
       toast({
         title: "Error",
         description: error.message || "An error occurred. Please try again.",
@@ -56,9 +57,6 @@ export default function ForgotPasswordPage() {
         </div>
 
         <Card className="border-0 bg-white/10 backdrop-blur-sm text-white">
-          <CardHeader>
-            <CardTitle className="text-center">Password Reset</CardTitle>
-          </CardHeader>
           <CardContent>
             {isSubmitted ? (
               <div className="text-center space-y-4">
@@ -96,14 +94,14 @@ export default function ForgotPasswordPage() {
               </form>
             )}
           </CardContent>
-          <CardFooter className="flex justify-center">
+          <div className="flex justify-center">
             <p className="text-sm text-white/70">
               Remember your password?{" "}
               <Link href="/login" className="text-purple-300 hover:text-purple-200">
                 Sign in
               </Link>
             </p>
-          </CardFooter>
+          </div>
         </Card>
       </div>
     </div>

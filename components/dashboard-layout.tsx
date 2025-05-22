@@ -79,15 +79,11 @@ export default function DashboardLayout({ children, userType = "hirer" }: Dashbo
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className={`p-6 transition-all duration-300 ${isHovered ? 'px-6' : 'px-4'}`}>
-            {isHovered ? (
-              <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-indigo-500 bg-clip-text text-transparent">
-                Prism
-              </h1>
-            ) : (
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-purple-400 to-indigo-500 flex items-center justify-center text-white font-bold text-xl">
-                P
-              </div>
-            )}
+{isHovered ? (
+  <img src="/prism-full-length1.png" alt="Prism Logo" className="h-14 object-contain" />
+) : (
+  <img src="/prism-logo1.png" alt="Prism Logo" className="w-14 h-14 object-contain" />
+)}
           </div>
 
           {/* Navigation */}
@@ -153,7 +149,9 @@ export default function DashboardLayout({ children, userType = "hirer" }: Dashbo
                   <span>Settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
+                  <Link href='/login'>
                   <LogOut className="mr-2 h-4 w-4" />
+                  </Link>
                   <span>Log out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>

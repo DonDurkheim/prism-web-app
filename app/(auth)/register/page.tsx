@@ -146,8 +146,8 @@ export default function RegisterPage() {
     <div className="min-h-screen auth-gradient flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mb-4">
-            <span className="text-white text-2xl font-bold">P</span>
+        <div className="flex justify-center">
+          <img src="/prism-logo1.png" alt="Prism Logo" className="w-[5rem] h-[5rem] mb-4" />
           </div>
           <h1 className="text-3xl font-bold text-white">Create your account</h1>
           <p className="text-white/70 mt-2">Join Prism and start your journey</p>
