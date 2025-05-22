@@ -16,6 +16,7 @@ export async function seedJobs() {
 
       if (error) throw error
     }
+    const done = true;
 
     // Get all companies to map their IDs
     const { data: companyData, error: companyError } = await supabase
