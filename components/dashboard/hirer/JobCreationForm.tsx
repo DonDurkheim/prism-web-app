@@ -15,6 +15,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import { Steps } from "@/components/ui/steps";
+import { Badge } from "@/components/ui/badge";
 
 const jobFormSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -23,9 +24,12 @@ const jobFormSchema = z.object({
   type: z.enum(["full-time", "part-time", "contract", "remote"]),
   experience: z.string().min(1, "Please select experience level"),
   salary: z.object({
-    min: z.number().min(0),
-    max: z.number().min(0),
+    min: z.number().min(0, "Minimum salary must be positive"),
+    max: z.number().min(0, "Maximum salary must be positive"),
     isPublic: z.boolean(),
+  }).refine((data) => data.max >= data.min, {
+    message: "Maximum salary must be greater than or equal to minimum salary",
+    path: ["max"],
   }),
   description: z.string().min(50, "Description must be at least 50 characters"),
   requirements: z.array(z.string()).min(1, "Add at least one requirement"),
@@ -251,7 +255,7 @@ export default function JobCreationForm() {
               <div className="flex items-center gap-2">
                 <Input
                   placeholder="Add a requirement"
-                  onKeyPress={(e) => {
+                  onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
                       const target = e.target as HTMLInputElement;
@@ -297,7 +301,7 @@ export default function JobCreationForm() {
               <div className="flex items-center gap-2">
                 <Input
                   placeholder="Add a skill"
-                  onKeyPress={(e) => {
+                  onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
                       const target = e.target as HTMLInputElement;
@@ -380,7 +384,7 @@ export default function JobCreationForm() {
               <div className="flex items-center gap-2">
                 <Input
                   placeholder="Add a benefit"
-                  onKeyPress={(e) => {
+                  onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
                       const target = e.target as HTMLInputElement;
@@ -430,7 +434,78 @@ export default function JobCreationForm() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Add review content here */}
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-semibold mb-2">Basic Information</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-500">Title</p>
+                    <p>{form.watch("title")}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Department</p>
+                    <p>{form.watch("department")}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Location</p>
+                    <p>{form.watch("location")}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Job Type</p>
+                    <p className="capitalize">{form.watch("type")}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-semibold mb-2">Requirements & Skills</h3>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm text-gray-500 mb-2">Requirements</p>
+                    <div className="flex flex-wrap gap-2">
+                      {requirements.map((req, index) => (
+                        <Badge key={index} variant="secondary">
+                          {req}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500 mb-2">Required Skills</p>
+                    <div className="flex flex-wrap gap-2">
+                      {skills.map((skill, index) => (
+                        <Badge key={index} variant="secondary">
+                          {skill}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-semibold mb-2">Compensation & Benefits</h3>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm text-gray-500">Salary Range</p>
+                    <p>
+                      ${form.watch("salary.min")} - ${form.watch("salary.max")}
+                      {!form.watch("salary.isPublic") && " (Private)"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500 mb-2">Benefits</p>
+                    <div className="flex flex-wrap gap-2">
+                      {benefits.map((benefit, index) => (
+                        <Badge key={index} variant="secondary">
+                          {benefit}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       )}
@@ -455,3 +530,4 @@ export default function JobCreationForm() {
       </div>
     </form>
   );
+}
