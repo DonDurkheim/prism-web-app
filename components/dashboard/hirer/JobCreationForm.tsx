@@ -529,10 +529,5 @@ export default function JobCreationForm() {
         )}
       </div>
     </form>
-<<<<<<< HEAD
-  )
-};
-=======
   );
 }
->>>>>>> daa931f2e9df8a441e0b86151fb386f8e2d9b0ac
