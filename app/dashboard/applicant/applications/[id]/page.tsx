@@ -26,7 +26,6 @@ import {
   ArrowLeft,
   Loader2,
 } from "lucide-react"
-import { supabase } from "@/lib/supabase/client"
 
 interface Application {
   id: string
@@ -92,63 +91,59 @@ const statusLabels = {
 export default function ApplicationDetailsPage({ params }: { params: { id: string } }) {
   const router = useRouter()
   const { toast } = useToast()
-  const [isLoading, setIsLoading] = useState(true)
-  const [application, setApplication] = useState<Application | null>(null)
-
-  useEffect(() => {
-    loadApplicationDetails()
-  }, [params.id])
-
-  const loadApplicationDetails = async () => {
-    try {
-      setIsLoading(true)
-      
-      const { data: applicationData, error: applicationError } = await supabase
-        .from("applications")
-        .select(`
-          *,
-          job:jobs (
-            title,
-            description,
-            location,
-            remote_policy,
-            job_type,
-            experience_level,
-            salary_range,
-            company:companies (
-              name,
-              logo_url,
-              industry
-            )
-          ),
-          interviews (
-            id,
-            scheduled_time,
-            duration,
-            status
-          ),
-          status_history (
-            status,
-            notes,
-            created_at
-          )
-        `)
-        .eq("id", params.id)
-        .single()
-
-      if (applicationError) throw applicationError
-
-      setApplication(applicationData)
-    } catch (error: any) {
-      toast({
-        title: "Error loading application details",
-        description: error.message,
-        variant: "destructive"
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  const [isLoading, setIsLoading] = useState(false) // Set to false as we're not loading from backend
+  const [application, setApplication] = useState<Application | null>({
+    id: params.id,
+    job_id: "mock-job-id",
+    status: "pending",
+    cover_letter: "This is a mock cover letter for demonstration purposes. In a real application, this would be dynamically loaded from a backend.",
+    video_url: "", // No video for now
+    ai_score: 75,
+    ai_feedback: {
+      strengths: ["Strong communication skills demonstrated in cover letter.", "Relevant experience in project management."],
+      improvements: ["Provide more specific examples of achievements.", "Quantify impact of previous roles."],
+      next_steps: ["Revise cover letter with more metrics.", "Prepare for a mock interview focusing on behavioral questions."],
+    },
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    job: {
+      title: "Software Engineer (Frontend)",
+      description: "This is a mock job description. In a real application, this would be dynamically loaded from a backend.",
+      location: "Remote",
+      remote_policy: "Remote",
+      job_type: "Full-time",
+      experience_level: "Mid-level",
+      salary_range: {
+        min: 80000,
+        max: 120000,
+        currency: "USD",
+      },
+      company: {
+        name: "Acme Corp",
+        logo_url: "",
+        industry: "Technology",
+      },
+    },
+    interviews: [
+      {
+        id: "mock-interview-1",
+        scheduled_time: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
+        duration: 60,
+        status: "scheduled",
+      },
+      {
+        id: "mock-interview-2",
+        scheduled_time: new Date(Date.now() - 86400000 * 2).toISOString(), // Two days ago
+        duration: 45,
+        status: "completed",
+      },
+    ],
+    status_history: [
+      { status: "pending", created_at: new Date(Date.now() - 86400000 * 5).toISOString() },
+      { status: "in_review", notes: "Application moved to review by hiring manager.", created_at: new Date(Date.now() - 86400000 * 3).toISOString() },
+      { status: "interview_scheduled", notes: "First interview scheduled.", created_at: new Date(Date.now() - 86400000).toISOString() },
+    ],
+  })
 
   if (isLoading || !application) {
     return (

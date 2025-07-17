@@ -5,8 +5,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import Applications from "@/components/dashboard/applicant/Applications"
 import DashboardLayout from "@/components/dashboard-layout"
 import { Building2, Clock, CheckCircle2, XCircle } from "lucide-react"
-import { supabase } from "@/lib/supabase/client"
-
 interface ApplicationStats {
   total: number
   inReview: number
@@ -16,46 +14,13 @@ interface ApplicationStats {
 
 export default function ApplicationsPage() {
   const [stats, setStats] = useState<ApplicationStats>({
-    total: 0,
-    inReview: 0,
-    accepted: 0,
-    rejected: 0
+    total: 10, // Mock data
+    inReview: 3, // Mock data
+    accepted: 2, // Mock data
+    rejected: 1, // Mock data
   })
 
-  useEffect(() => {
-    loadStats()
-  }, [])
-
-  const loadStats = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-
-      const { data: applicantData } = await supabase
-        .from("applicants")
-        .select("id")
-        .eq("user_id", user.id)
-        .single()
-
-      if (!applicantData) return
-
-      const { data: applications } = await supabase
-        .from("applications")
-        .select("status")
-        .eq("applicant_id", applicantData.id)
-
-      if (!applications) return
-
-      setStats({
-        total: applications.length,
-        inReview: applications.filter(app => app.status === "in_review").length,
-        accepted: applications.filter(app => app.status === "accepted").length,
-        rejected: applications.filter(app => app.status === "rejected").length
-      })
-    } catch (error) {
-      console.error("Error loading stats:", error)
-    }
-  }
+  // No useEffect or loadStats needed as we're using mock data for now
 
   return (
     <DashboardLayout userType="applicant">

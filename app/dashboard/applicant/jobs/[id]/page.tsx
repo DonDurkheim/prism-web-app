@@ -25,8 +25,6 @@ import {
   ArrowLeft,
   Loader2,
 } from "lucide-react"
-import { supabase } from "@/lib/supabase/client"
-
 interface Job {
   id: string
   title: string
@@ -75,114 +73,64 @@ interface JobDetails extends Job {
 export default function JobDetailsPage({ params }: { params: { id: string } }) {
   const router = useRouter()
   const { toast } = useToast()
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false) // Set to false as we're not loading from backend
   const [isApplying, setIsApplying] = useState(false)
   const [showApplyDialog, setShowApplyDialog] = useState(false)
   const [coverLetter, setCoverLetter] = useState("")
-  const [job, setJob] = useState<JobDetails | null>(null)
-  const [matchScore, setMatchScore] = useState<number>(0)
-
-  useEffect(() => {
-    loadJobDetails()
-  }, [params.id])
-
-  const loadJobDetails = async () => {
-    try {
-      setIsLoading(true)
-      
-      // Get current user's skills for matching
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error("Not authenticated")
-
-      const { data: applicantData, error: applicantError } = await supabase
-        .from("applicants")
-        .select("skills")
-        .eq("user_id", user.id)
-        .single()
-
-      if (applicantError) throw applicantError
-
-      // Get job details
-      const { data: jobData, error: jobError } = await supabase
-        .from("jobs")
-        .select(`
-          *,
-          companies (
-            name,
-            logo_url,
-            industry,
-            location,
-            website,
-            description
-          ),
-          hirers (
-            position,
-            users (
-              first_name,
-              last_name
-            )
-          )
-        `)
-        .eq("id", params.id)
-        .single()
-
-      if (jobError) throw jobError
-
-      setJob(jobData as JobDetails)
-
-      // Calculate match score
-      if (applicantData.skills && jobData.requirements.skills) {
-        const applicantSkills = new Set(applicantData.skills.map((s: { name: string }) => s.name.toLowerCase()))
-        const jobSkills = new Set(jobData.requirements.skills.map((s: string) => s.toLowerCase()))
-
-        if (applicantSkills.size > 0 && jobSkills.size > 0) {
-          const matchingSkills = [...jobSkills].filter(skill => applicantSkills.has(skill))
-          setMatchScore(Math.round((matchingSkills.length / jobSkills.size) * 100))
-        }
+  const [job, setJob] = useState<JobDetails | null>({
+    id: params.id,
+    title: "Senior Frontend Developer",
+    description: "<p>We are looking for a passionate Senior Frontend Developer to join our dynamic team. You will be responsible for developing and maintaining user-facing applications, ensuring high performance and responsiveness.</p><p><strong>Responsibilities:</strong></p><ul><li>Develop new user-facing features using React.js and Next.js.</li><li>Build reusable components and front-end libraries for future use.</li><li>Optimize components for maximum performance across a multitude of web-capable devices and browsers.</li><li>Collaborate with backend developers and UI/UX designers to improve usability.</li><li>Stay up-to-date on emerging technologies.</li></ul>",
+    location: "Remote",
+    remote_policy: "Remote",
+    job_type: "Full-time",
+    experience_level: "Senior",
+    deadline: new Date(Date.now() + 86400000 * 30).toISOString(), // 30 days from now
+    status: "active",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    company: {
+      name: "InnovateTech Solutions",
+      logo_url: "",
+      industry: "Software Development",
+      website: "https://www.innovatetech.com",
+      description: "InnovateTech Solutions is a leading software company specializing in cutting-edge web and mobile applications. We foster a collaborative and innovative environment."
+    },
+    requirements: {
+      skills: ["React", "Next.js", "TypeScript", "JavaScript", "HTML", "CSS", "Tailwind CSS"],
+      experience: "5+ years of experience in frontend development.",
+      education: "Bachelor's degree in Computer Science or related field.",
+      additional: ["Strong problem-solving skills.", "Excellent communication and teamwork abilities."]
+    },
+    benefits: {
+      salary_range: {
+        min: 120000,
+        max: 160000,
+        currency: "USD"
+      },
+      perks: ["Health Insurance", "Dental Insurance", "Vision Insurance", "401(k) matching", "Unlimited PTO", "Remote Work", "Professional Development"]
+    },
+    hirer: {
+      position: "Hiring Manager",
+      user: {
+        first_name: "Jane",
+        last_name: "Doe"
       }
-    } catch (error: any) {
-      toast({
-        title: "Error loading job details",
-        description: error.message,
-        variant: "destructive"
-      })
-    } finally {
-      setIsLoading(false)
     }
-  }
+  })
+  const [matchScore, setMatchScore] = useState<number>(85) // Mock match score
+
+  // No useEffect or loadJobDetails needed as we're using mock data for now
 
   const handleApply = async () => {
     try {
       setIsApplying(true)
-
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error("Not authenticated")
-
-      // Get applicant profile
-      const { data: applicantData, error: applicantError } = await supabase
-        .from("applicants")
-        .select("id")
-        .eq("user_id", user.id)
-        .single()
-
-      if (applicantError) throw applicantError
-
-      // Create application
-      const { error: applicationError } = await supabase
-        .from("applications")
-        .insert({
-          job_id: params.id,
-          applicant_id: applicantData.id,
-          cover_letter: coverLetter,
-          status: "pending",
-          match_score: matchScore
-        })
-
-      if (applicationError) throw applicationError
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500)) 
 
       toast({
         title: "Application submitted",
-        description: "Your application has been submitted successfully.",
+        description: "Your application has been submitted successfully (mock submission).",
       })
 
       setShowApplyDialog(false)

@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
-import { supabase } from "@/lib/supabase/client"
 import { useToast } from "@/components/ui/use-toast"
 import DashboardLayout from "@/components/dashboard-layout"
 import { Button } from "@/components/ui/button"
@@ -152,56 +151,7 @@ export default function ApplicantProfilePage() {
     }
   })
 
-  useEffect(() => {
-    loadProfile()
-  }, [])
-
-  const loadProfile = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error("Not authenticated")
-
-      const { data: userData, error: userError } = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", user.id)
-        .single()
-
-      if (userError) throw userError
-
-      const { data: applicantData, error: applicantError } = await supabase
-        .from("applicants")
-        .select("*")
-        .eq("user_id", user.id)
-        .single()
-
-      if (applicantError) throw applicantError
-
-      setProfile({
-        firstName: userData.first_name,
-        lastName: userData.last_name,
-        headline: applicantData.headline,
-        bio: applicantData.bio,
-        location: applicantData.location,
-        email: userData.email,
-        phone: applicantData.phone || "",
-        availability: applicantData.availability || "",
-        skills: applicantData.skills || [],
-        softSkills: applicantData.soft_skills || [],
-        experience: applicantData.experience || [],
-        certifications: applicantData.certifications || [],
-        socials: applicantData.socials || {},
-      })
-    } catch (error: any) {
-      toast({
-        title: "Error loading profile",
-        description: error.message,
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  // No useEffect or loadProfile needed as we're using mock data for now
 
   return (
     <DashboardLayout userType="applicant">

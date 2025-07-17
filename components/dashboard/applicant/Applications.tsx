@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -11,8 +11,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useToast } from "@/components/ui/use-toast"
 import { Briefcase, Calendar, MapPin, Search, SlidersHorizontal, XCircle } from "lucide-react"
-import { supabase } from "@/lib/supabase/client"
-
 interface JobCompany {
   name: string
 }
@@ -29,20 +27,6 @@ interface Application {
   status: string
   created_at: string
   ai_score?: number
-}
-
-interface JobResponse {
-  title: string
-  location: string
-  company: JobCompany
-}
-
-interface ApplicationResponse {
-  id: string
-  status: string
-  created_at: string
-  ai_score?: number
-  job: JobResponse
 }
 
 const statusColors = {
@@ -65,77 +49,69 @@ const statusLabels = {
 export default function Applications() {
   const router = useRouter()
   const { toast } = useToast()
-  const [applications, setApplications] = useState<Application[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [applications, setApplications] = useState<Application[]>([
+    {
+      id: "app1",
+      job: {
+        title: "Frontend Developer",
+        location: "Remote",
+        company: { name: "Tech Solutions Inc." },
+      },
+      status: "in_review",
+      created_at: new Date(Date.now() - 86400000 * 10).toISOString(),
+      ai_score: 85,
+    },
+    {
+      id: "app2",
+      job: {
+        title: "UI/UX Designer",
+        location: "New York, NY",
+        company: { name: "Creative Agency" },
+      },
+      status: "pending",
+      created_at: new Date(Date.now() - 86400000 * 5).toISOString(),
+      ai_score: 70,
+    },
+    {
+      id: "app3",
+      job: {
+        title: "Backend Engineer",
+        location: "San Francisco, CA",
+        company: { name: "Data Innovations" },
+      },
+      status: "rejected",
+      created_at: new Date(Date.now() - 86400000 * 15).toISOString(),
+      ai_score: 60,
+    },
+    {
+      id: "app4",
+      job: {
+        title: "Product Manager",
+        location: "Remote",
+        company: { name: "Global Corp" },
+      },
+      status: "interview_scheduled",
+      created_at: new Date(Date.now() - 86400000 * 3).toISOString(),
+      ai_score: 92,
+    },
+    {
+      id: "app5",
+      job: {
+        title: "DevOps Engineer",
+        location: "Austin, TX",
+        company: { name: "Cloud Services Ltd." },
+      },
+      status: "accepted",
+      created_at: new Date(Date.now() - 86400000 * 20).toISOString(),
+      ai_score: 88,
+    },
+  ])
+  const [isLoading, setIsLoading] = useState(false) // Set to false as we're not loading from backend
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [showFilters, setShowFilters] = useState(false)
 
-  useEffect(() => {
-    loadApplications()
-  }, [])
-
-  const loadApplications = async () => {
-    try {
-      setIsLoading(true)
-
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error("Not authenticated")
-
-      const { data: applicantData, error: applicantError } = await supabase
-        .from("applicants")
-        .select("id")
-        .eq("user_id", user.id)
-        .single()
-
-      if (applicantError) throw applicantError
-
-      const { data: applicationsData, error: applicationsError } = await supabase
-        .from("applications")
-        .select(`
-          id,
-          status,
-          created_at,
-          ai_score,
-          job:jobs (
-            title,
-            location,
-            company:companies (
-              name
-            )
-          )
-        `)
-        .eq("applicant_id", applicantData.id)
-        .order("created_at", { ascending: false })
-
-      if (applicationsError) throw applicationsError
-
-      // Type assertion to help TypeScript understand the shape
-      const transformedApplications: Application[] = (applicationsData || []).map((app: any) => ({
-        id: app.id,
-        status: app.status,
-        created_at: app.created_at,
-        ai_score: app.ai_score,
-        job: {
-          title: app.job.title,
-          location: app.job.location,
-          company: {
-            name: app.job.company.name
-          }
-        }
-      }))
-
-      setApplications(transformedApplications)
-    } catch (error: any) {
-      toast({
-        title: "Error loading applications",
-        description: error.message,
-        variant: "destructive"
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  // No useEffect or loadApplications needed as we're using mock data for now
 
   const filteredApplications = applications.filter(app => {
     const matchesSearch = searchQuery === "" || 
