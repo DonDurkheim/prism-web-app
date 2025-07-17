@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import DashboardLayout from "@/components/dashboard-layout";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis } from "recharts";
 import { Building2, Users2, FileCheck2, Calendar, TrendingUp, Briefcase, CheckCircle2, Clock, Target } from "lucide-react";
-import { supabase } from "@/lib/supabase/client";
 
 interface DashboardStats {
   activeJobs: number;

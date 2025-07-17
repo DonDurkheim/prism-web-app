@@ -33,6 +33,7 @@ let users: SimulatedUser[] = [...testUsers];
 // Generate a random ID
 const generateId = () => Math.random().toString(36).substring(2, 15)
 
+// Mock authentication functions
 export const simulatedAuth = {
   // Sign up a new user
   signUp: async (email: string, password: string, userData: any) => {
@@ -74,6 +75,9 @@ export const simulatedAuth = {
 
   // Sign in a user
   signIn: async (email: string, password: string) => {
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
     const user = users.find((u) => u.email === email && u.password === password)
 
     if (!user) {
@@ -83,20 +87,21 @@ export const simulatedAuth = {
       }
     }
 
-    return {
-      error: null,
-      data: {
-        user: {
-          id: user.id,
-          email: user.email,
+    // Mock successful sign in
+    return { 
+      data: { 
+        user: { 
+          id: '123',
+          email,
           user_metadata: {
-            first_name: user.firstName,
-            last_name: user.lastName,
-            user_type: user.userType,
-          },
-        },
+            first_name: 'Test',
+            last_name: 'User',
+            user_type: 'applicant' as const
+          }
+        }
       },
-    }
+      error: null
+    };
   },
 
   // Sign in with OAuth (simulated)
@@ -109,19 +114,38 @@ export const simulatedAuth = {
 
   // Get current session (simulated)
   getSession: async () => {
-    // This would normally check for a valid session
     return {
-      error: null,
-      data: { session: null },
-    }
+      data: {
+        session: {
+          user: {
+            id: '123',
+            email: 'test@example.com',
+            user_metadata: {
+              first_name: 'Test',
+              last_name: 'User',
+              user_type: 'applicant' as const
+            }
+          }
+        }
+      },
+      error: null
+    };
   },
 
   // Sign out
   signOut: async () => {
-    return {
-      error: null,
-      data: {},
-    }
+    await new Promise(resolve => setTimeout(resolve, 500));
+    return { error: null };
+  },
+
+  resetPassword: async (email: string) => {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    return { error: null };
+  },
+
+  updatePassword: async (password: string) => {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    return { error: null };
   },
 }
 

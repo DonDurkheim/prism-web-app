@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { supabase } from "@/lib/supabase/client"
+import { simulatedAuth } from "@/lib/auth/simulated-auth"
 import { useToast } from "@/components/ui/use-toast"
 
 export default function ResetPasswordPage() {
@@ -37,93 +37,74 @@ export default function ResetPasswordPage() {
     }
     
     if (password.length < 8) {
-    
-    setError("Password must be at least 8 characters long.")
-    return
+      setError("Password must be at least 8 characters long.")
+      return
+    }
 
     setIsLoading(true)
 
     try {
-      const { error } = await supabase.auth.updateUser({ password })
+      const { error } = await simulatedAuth.updatePassword(password)
 
       if (error) throw error
 
       toast({
-        title: "Password updated",
-        description: "Your password has been successfully reset.",
+        title: "Success",
+        description: "Your password has been reset successfully.",
       })
 
-      // Redirect to login page after a short delay
-      setTimeout(() => {
-        router.push("/login")
-      }, 2000)
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "An error occurred. Please try again.",
-        variant: "destructive",
-      })
-      setError(error.message || "An error occurred. Please try again.")
+      router.push("/login")
+    } catch (error) {
+      setError("An error occurred while resetting your password.")
+      console.error("Reset password error:", error)
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen auth-gradient flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mb-4">
-            <span className="text-white text-2xl font-bold">P</span>
-          </div>
-          <h1 className="text-3xl font-bold text-white">Reset Password</h1>
-          <p className="text-white/70 mt-2">Create a new password for your account</p>
-        </div>
-
-        <Card className="border-0 bg-white/10 backdrop-blur-sm text-white">
-          <CardHeader>
-            <CardTitle className="text-center">New Password</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {error ? <div className="bg-red-500/20 text-red-300 p-4 rounded-md mb-4">{error}</div> : null}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="password">New Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  className="bg-white/5 border-white/20 text-white"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  className="bg-white/5 border-white/20 text-white"
-                />
-              </div>
-              <Button type="submit" className="w-full button-gradient" disabled={isLoading}>
-                {isLoading ? "Updating..." : "Reset Password"}
-              </Button>
-            </form>
+    <div className="container flex h-screen w-screen flex-col items-center justify-center">
+      <Card className="w-[400px]">
+        <CardHeader>
+          <CardTitle>Reset Password</CardTitle>
+        </CardHeader>
+        <form onSubmit={handleSubmit}>
+          <CardContent className="space-y-4">
+            {error && (
+              <div className="text-sm font-medium text-destructive">{error}</div>
+            )}
+            <div className="space-y-2">
+              <Label htmlFor="password">New Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
           </CardContent>
-          <CardFooter className="flex justify-center">
-            <p className="text-sm text-white/70">
-              Make sure to use a strong, unique password that you don't use elsewhere.
-            </p>
+          <CardFooter>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isLoading}
+            >
+              {isLoading ? "Resetting..." : "Reset Password"}
+            </Button>
           </CardFooter>
-        </Card>
-      </div>
+        </form>
+      </Card>
     </div>
   )
-  }
 }

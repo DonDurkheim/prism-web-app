@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
-import { supabase } from "@/lib/supabase/client"
+import { simulatedAuth } from "@/lib/auth/simulated-auth"
 import { useToast } from "@/components/ui/use-toast"
 
 export default function ForgotPasswordPage() {
